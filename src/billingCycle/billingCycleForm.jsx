@@ -7,10 +7,20 @@ import { init } from './billingCycleAction';
 import labelAndInput from '../common/form/labelAndInput';
 import ItemList from './itemList';
 import { selectTab } from '../common/tab/tabActions';
+import Summary from './summary';
 
 class BillingCycleForm extends Component {
+  calculateSummary() {
+    const sum = (t, v) => t + v;
+    return {
+      sumOfCredits: this.props.credits.map(c => +c.value || 0).reduce(sum),
+      sumOfDebts: this.props.debts.map(d => +d.value || 0).reduce(sum)
+    };
+  }
+
   render() {
-    const { handleSubmit, readOnly, credits, debits } = this.props;
+    const { handleSubmit, readOnly, credits, debts } = this.props;
+    const { sumOfCredits, sumOfDebts } = this.calculateSummary();
 
     return (
       <form role='form' onSubmit={handleSubmit}>
@@ -41,6 +51,7 @@ class BillingCycleForm extends Component {
             placeholder='Informe o ano'
             readOnly={readOnly}
           />
+          <Summary credit={sumOfCredits} debts={sumOfDebts} />
           <ItemList
             cols='12 6'
             list={credits}
@@ -50,9 +61,9 @@ class BillingCycleForm extends Component {
           />
           <ItemList
             cols='12 6'
-            list={debits}
+            list={debts}
             readOnly={readOnly}
-            field='debits'
+            field='debts'
             legend='Débito'
             showStatus={true}
           />
@@ -61,10 +72,7 @@ class BillingCycleForm extends Component {
           <button type='submit' className={`btn btn-${this.props.submitClass}`}>
             {this.props.submitLabel}
           </button>
-          <button
-            type='button'
-            className='btn btn-default'
-            onClick={this.props.init}>
+          <button type='button' className='btn btn-default' onClick={this.props.init}>
             Cancelar
           </button>
         </div>
@@ -79,11 +87,11 @@ BillingCycleForm = reduxForm({
 })(BillingCycleForm);
 //export default reduxForm({ form: 'billingCycleForm', destroyOnUnmount: false })(BillingCycleForm);
 const selector = formValueSelector('billingCycleForm');
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   credits: selector(state, 'credits'),
-  debits: selector(state, 'debits')
+  debts: selector(state, 'debts')
 });
-const mapDispatchToProps = (dispatch) => bindActionCreators({ init }, dispatch);
+const mapDispatchToProps = dispatch => bindActionCreators({ init }, dispatch);
 export default connect(
   mapStateToProps,
   mapDispatchToProps
