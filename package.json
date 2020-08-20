@@ -40,6 +40,6 @@
     "webpack-dev-server": "1.16.2"
   },
   "dependencies": {
-    "bcrypt": "^3.0.6"
+    "bcrypt": "^5.0.0"
   }
 }
